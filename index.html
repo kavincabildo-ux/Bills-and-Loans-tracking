@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bills">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#2563eb">
+<title>Bills &amp; Loans</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--tx:#14181f;--mut:#6b7280;--line:#e5e7eb;--ok:#16a34a;--okbg:#dcfce7;--bad:#dc2626;--badbg:#fee2e2;--warn:#b45309;--warnbg:#fef3c7;--acc:#2563eb;--upbg:#eef2ff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1116;--card:#1a1f27;--tx:#f1f3f6;--mut:#9aa3b2;--line:#2a313c;--ok:#4ade80;--okbg:#12301d;--bad:#f87171;--badbg:#3b1616;--warn:#fbbf24;--warnbg:#3a2c0b;--acc:#60a5fa;--upbg:#1b2440;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1116;--card:#1a1f27;--tx:#f1f3f6;--mut:#9aa3b2;--line:#2a313c;--ok:#4ade80;--okbg:#12301d;--bad:#f87171;--badbg:#3b1616;--warn:#fbbf24;--warnbg:#3a2c0b;--acc:#60a5fa;--upbg:#1b2440;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif}
+main{max-width:520px;margin:0 auto;padding:18px 16px 110px}
+h1{font-size:28px;margin:6px 0 2px;letter-spacing:-.5px}
+.sub{color:var(--mut);margin:0 0 16px}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.box small{color:var(--mut);display:block;font-size:13px}
+.box b{font-size:21px}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin:4px 0 18px}
+.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.bill{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:10px}
+.chk{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid var(--mut);background:none;color:#fff;font-size:20px;display:grid;place-items:center;padding:0}
+.paid .chk{background:var(--ok);border-color:var(--ok)}
+.info{flex:1;min-width:0}
+.name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.paid .name{text-decoration:line-through;color:var(--mut)}
+.meta{font-size:13px;color:var(--mut)}
+.right{text-align:right}
+.amt{font-weight:600}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-top:3px}
+.t-paid{background:var(--okbg);color:var(--ok)}.t-over{background:var(--badbg);color:var(--bad)}.t-soon{background:var(--warnbg);color:var(--warn)}.t-up{background:var(--upbg);color:var(--acc)}
+.empty{text-align:center;color:var(--mut);padding:40px 10px}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--acc);color:#fff;border:0;border-radius:30px;padding:15px 22px;font-size:16px;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.sheet.on{display:flex}
+.panel{background:var(--card);width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:18px 18px calc(22px + env(safe-area-inset-bottom,0px))}
+.panel h2{margin:0 0 12px;font-size:20px}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+input{width:100%;font-size:17px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--tx)}
+.row{display:flex;gap:10px}.row>div{flex:1}
+.btns{display:flex;gap:10px;margin-top:16px}
+.btns button{flex:1;font-size:16px;font-weight:600;padding:13px;border-radius:12px;border:0}
+.save{background:var(--acc);color:#fff}.cancel{background:var(--line);color:var(--tx)}.del{background:var(--badbg);color:var(--bad)}
+.tabs{display:flex;background:var(--line);border-radius:12px;padding:3px;margin:0 0 14px}.tab{flex:1;border:0;background:none;color:var(--mut);font-size:15px;font-weight:600;padding:9px;border-radius:10px}.tab.on{background:var(--card);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.15)}.mini{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 3px}.mini i{display:block;height:100%;background:var(--acc)}
+.sal{margin-bottom:12px}.sal label{margin-top:0}.salrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.salrow small{color:var(--mut);display:block;font-size:13px}.salrow b{font-size:21px}.neg{color:var(--bad)}.pos{color:var(--ok)}
+.note{font-size:12px;color:var(--mut);text-align:center;margin-top:14px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Bills &amp; Loans</h1>
+  <p class="sub" id="month"></p>
+  <div class="box sal"><label for="sal">Monthly salary (₱)</label><input id="sal" type="number" inputmode="decimal" placeholder="Enter your salary"><div class="salrow"><div><small>All bills &amp; loans</small><b id="obl">₱0</b></div><div><small>Left for you</small><b id="lft">—</b></div></div><div class="meta" id="salnote" style="margin-top:8px"></div></div>
+  <div class="tabs"><button class="tab" data-t="bill">Bills</button><button class="tab" data-t="loan">Loans</button></div>
+  <div class="sum">
+    <div class="box"><small id="l1">Left to pay</small><b id="left">₱0</b></div>
+    <div class="box"><small id="l2">Paid</small><b id="paidc">0 of 0</b></div>
+  </div>
+  <div class="bar"><i id="prog"></i></div>
+  <div id="list"></div>
+  <p class="note" id="note">Bills repeat monthly and reset automatically each new month.</p>
+</main>
+<button class="fab" id="add">+ Add bill</button>
+
+<div class="sheet" id="sheet">
+  <div class="panel">
+    <h2 id="ptitle">Add bill</h2>
+    <label for="fn" id="lblname">Bill name</label>
+    <input id="fn" placeholder="e.g. Electricity" autocomplete="off">
+    <div class="row">
+      <div><label for="fa" id="lblamt">Amount (₱)</label><input id="fa" type="number" inputmode="decimal" placeholder="0.00"></div>
+      <div><label for="fd">Due day (1–31)</label><input id="fd" type="number" inputmode="numeric" min="1" max="31" placeholder="15"></div>
+    </div>
+    <div id="loanf" style="display:none"><div class="row">
+      <div><label for="ft">Total months</label><input id="ft" type="number" inputmode="numeric" min="1" placeholder="24"></div>
+      <div><label for="fb">Months paid already</label><input id="fb" type="number" inputmode="numeric" min="0" placeholder="0"></div>
+    </div></div>
+    <div class="btns">
+      <button class="cancel" id="cancel">Cancel</button>
+      <button class="del" id="del" style="display:none">Delete</button>
+      <button class="save" id="save">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var KEY='bills-v1', bills=[], editing=null, dbDoc=null, tab='bill', salary=0;
+  var now=new Date(), mk=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  var dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(), today=now.getDate();
+  var $=function(id){return document.getElementById(id)};
+  $('month').textContent=now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  var peso=function(n){return '₱'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2})};
+  try{var s=localStorage.getItem(KEY); if(s) bills=JSON.parse(s)||[]; salary=parseFloat(localStorage.getItem('salary-v1'))||0;}catch(e){}
+  function persist(){
+    try{localStorage.setItem(KEY,JSON.stringify(bills));localStorage.setItem('salary-v1',String(salary));}catch(e){}
+    if(dbDoc){dbDoc.set({bills:bills,salary:salary}).catch(function(){});}
+  }
+  var typeOf=function(b){return b.type||'bill'};
+  var paidCount=function(b){return (b.base||0)+Object.keys(b.paid||{}).length};
+  var isDone=function(b){return typeOf(b)==='loan'&&paidCount(b)>=b.term};
+  var dueDay=function(b){return Math.min(b.day,dim)};
+  function status(b){
+    var pm=b.paid&&b.paid[mk];
+    if(isDone(b))return {k:'paid',t:'Completed',c:'t-paid',o:4};
+    if(pm)return {k:'paid',t:'Paid',c:'t-paid',o:3};
+    var d=dueDay(b)-today;
+    if(d<0)return {k:'over',t:'Overdue by '+(-d)+(d===-1?' day':' days'),c:'t-over',o:0};
+    if(d===0)return {k:'soon',t:'Due today',c:'t-soon',o:1};
+    if(d<=3)return {k:'soon',t:'Due in '+d+(d===1?' day':' days'),c:'t-soon',o:1};
+    return {k:'up',t:'Due in '+d+' days',c:'t-up',o:2};
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML}
+  function ordinal(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])}
+  function renderSal(){
+    var tot=0, paidSoFar=0;
+    bills.forEach(function(b){
+      var pm=b.paid&&b.paid[mk];
+      if(isDone(b)&&!pm)return;
+      var a=Number(b.amount)||0; tot+=a; if(pm)paidSoFar+=a;
+    });
+    $('obl').textContent=peso(tot);
+    var l=$('lft');
+    if(!salary){l.textContent='—';l.className='';$('salnote').textContent='Enter your salary to see how much is left after everything.';return}
+    var r=salary-tot;
+    l.textContent=(r<0?'-':'')+peso(Math.abs(r));
+    l.className=r<0?'neg':'pos';
+    $('salnote').textContent=peso(paidSoFar)+' already paid · '+peso(tot-paidSoFar)+' still to pay this month'+(r<0?' · over budget':'');
+  }
+  function render(){
+    var loan=tab==='loan', list=$('list'), left=0, paid=0, bal=0, pm=0, tm=0;
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.t===tab)});
+    var items=bills.filter(function(b){return typeOf(b)===tab});
+    var arr=items.slice().sort(function(a,b){var x=status(a),y=status(b);return x.o-y.o||dueDay(a)-dueDay(b)});
+    list.innerHTML=arr.length?'':'<div class="empty">No '+(loan?'loans':'bills')+' yet.<br>Tap “+ Add '+(loan?'loan':'bill')+'” to start.</div>';
+    arr.forEach(function(b){
+      var st=status(b), ok=st.k==='paid', done=isDone(b), pc=paidCount(b);
+      if(ok)paid++; else left+=Number(b.amount)||0;
+      if(loan){bal+=Math.max(0,b.term-pc)*(Number(b.amount)||0);pm+=Math.min(pc,b.term);tm+=b.term}
+      var meta='Due every '+ordinal(b.day);
+      var extra='';
+      if(loan){
+        var c=Math.min(pc,b.term);
+        meta+=' · '+c+' of '+b.term+' months paid';
+        extra='<div class="mini"><i style="width:'+(c/b.term*100)+'%"></i></div><div class="meta">'+(done?'Fully paid':(b.term-c)+' months left · '+peso((b.term-c)*b.amount)+' remaining')+'</div>';
+      }
+      var el=document.createElement('div');
+      el.className='bill'+(ok?' paid':'');
+      el.innerHTML='<button class="chk" aria-label="Toggle paid">'+(ok?'✓':'')+'</button>'+
+        '<div class="info" data-edit="1"><div class="name">'+esc(b.name)+'</div><div class="meta">'+meta+'</div>'+extra+'</div>'+
+        '<div class="right" data-edit="1"><div class="amt">'+peso(b.amount)+'</div><span class="tag '+st.c+'">'+st.t+'</span></div>';
+      el.querySelector('.chk').onclick=function(){
+        b.paid=b.paid||{};
+        if(b.paid[mk])delete b.paid[mk];
+        else{ if(isDone(b))return; b.paid[mk]=true; }
+        persist();render();
+      };
+      el.querySelectorAll('[data-edit]').forEach(function(n){n.onclick=function(){openSheet(b)}});
+      list.appendChild(el);
+    });
+    $('l1').textContent='Left to pay this month';
+    $('left').textContent=peso(left);
+    if(loan){$('l2').textContent='Total balance left';$('paidc').textContent=peso(bal);$('prog').style.width=(tm?pm/tm*100:0)+'%'}
+    else{$('l2').textContent='Paid';$('paidc').textContent=paid+' of '+items.length;$('prog').style.width=(items.length?paid/items.length*100:0)+'%'}
+    renderSal();
+    $('add').textContent='+ Add '+(loan?'loan':'bill');
+    $('note').textContent=loan?'Tick a loan each month once paid. Months paid before you added it are counted too.':'Bills repeat monthly and reset automatically each new month.';
+  }
+  document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){tab=t.dataset.t;render()}});
+  function openSheet(b){
+    editing=b||null; var loan=(b?typeOf(b):tab)==='loan';
+    $('ptitle').textContent=(b?'Edit ':'Add ')+(loan?'loan':'bill');
+    $('fn').value=b?b.name:'';$('fa').value=b?b.amount:'';$('fd').value=b?b.day:'';
+    $('lblname').textContent=loan?'Loan name':'Bill name';
+    $('lblamt').textContent=loan?'Monthly payment (₱)':'Amount (₱)';
+    $('loanf').style.display=loan?'block':'none';
+    $('ft').value=b&&loan?b.term:'';$('fb').value=b&&loan?(b.base||0):'';
+    $('del').style.display=b?'block':'none';
+    $('sheet').classList.add('on');
+  }
+  function closeSheet(){$('sheet').classList.remove('on')}
+  $('add').onclick=function(){openSheet(null)};
+  $('cancel').onclick=closeSheet;
+  $('sheet').onclick=function(e){if(e.target===$('sheet'))closeSheet()};
+  $('del').onclick=function(){
+    if(!editing||!confirm('Delete this '+(typeOf(editing)==='loan'?'loan':'bill')+'?'))return;
+    bills=bills.filter(function(x){return x!==editing});persist();render();closeSheet();
+  };
+  $('save').onclick=function(){
+    var loan=(editing?typeOf(editing):tab)==='loan';
+    var name=$('fn').value.trim(), amt=parseFloat($('fa').value), day=parseInt($('fd').value,10), term=parseInt($('ft').value,10), base=parseInt($('fb').value,10);
+    if(!name){$('fn').focus();return}
+    if(!(day>=1&&day<=31)){$('fd').focus();return}
+    if(isNaN(amt))amt=0;
+    if(loan){
+      if(!(term>=1)){$('ft').focus();return}
+      if(isNaN(base)||base<0)base=0; if(base>term)base=term;
+    }
+    if(editing){editing.name=name;editing.amount=amt;editing.day=day;if(loan){editing.term=term;editing.base=base}}
+    else{
+      var o={id:Date.now().toString(36),type:tab,name:name,amount:amt,day:day,paid:{}};
+      if(loan){o.term=term;o.base=base}
+      bills.push(o);
+    }
+    persist();render();closeSheet();
+  };
+  $('sal').value=salary||'';
+  var st2;
+  $('sal').oninput=function(){
+    salary=Math.max(0,parseFloat($('sal').value)||0);
+    renderSal();
+    clearTimeout(st2);st2=setTimeout(persist,500);
+  };
+  render();
+})();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+</body>
+</html>
