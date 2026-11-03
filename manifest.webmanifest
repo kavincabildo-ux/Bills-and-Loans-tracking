@@ -1,6 +1,6 @@
 {
- "name": "Bills & Loans",
- "short_name": "Bills",
+ "name": "My Money",
+ "short_name": "Money",
  "start_url": ".",
  "scope": ".",
  "display": "standalone",

@@ -8,10 +8,10 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Bills">
+<meta name="apple-mobile-web-app-title" content="Money">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#2563eb">
-<title>Bills &amp; Loans</title>
+<title>My Money</title>
 <style>
 :root{--bg:#f4f5f7;--card:#fff;--tx:#14181f;--mut:#6b7280;--line:#e5e7eb;--ok:#16a34a;--okbg:#dcfce7;--bad:#dc2626;--badbg:#fee2e2;--warn:#b45309;--warnbg:#fef3c7;--acc:#2563eb;--upbg:#eef2ff;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
@@ -52,24 +52,73 @@ input{width:100%;font-size:17px;padding:12px;border-radius:12px;border:1px solid
 .btns{display:flex;gap:10px;margin-top:16px}
 .btns button{flex:1;font-size:16px;font-weight:600;padding:13px;border-radius:12px;border:0}
 .save{background:var(--acc);color:#fff}.cancel{background:var(--line);color:var(--tx)}.del{background:var(--badbg);color:var(--bad)}
-.tabs{display:flex;background:var(--line);border-radius:12px;padding:3px;margin:0 0 14px}.tab{flex:1;border:0;background:none;color:var(--mut);font-size:15px;font-weight:600;padding:9px;border-radius:10px}.tab.on{background:var(--card);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.15)}.mini{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 3px}.mini i{display:block;height:100%;background:var(--acc)}
+.tabs{display:flex;background:var(--line);border-radius:12px;padding:3px;margin:0 0 14px}.tab{flex:1;border:0;background:none;color:var(--mut);font-size:13px;font-weight:600;padding:9px 2px;border-radius:10px}.tab.on{background:var(--card);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.15)}.mini{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 3px}.mini i{display:block;height:100%;background:var(--acc)}
 .sal{margin-bottom:12px}.sal label{margin-top:0}.salrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.salrow small{color:var(--mut);display:block;font-size:13px}.salrow b{font-size:21px}.neg{color:var(--bad)}.pos{color:var(--ok)}
 .note{font-size:12px;color:var(--mut);text-align:center;margin-top:14px}
+
+.view{display:none}.view.on{display:block}
+.ov{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 6px}
+.ov .box{padding:10px 12px}.ov b{font-size:19px}.neg{color:var(--bad)}.pos{color:var(--ok)}
+.ovnote{font-size:12px;color:var(--mut);margin:0 2px 14px}
+.quick{display:flex;gap:8px;margin:12px 0}.quick input{min-width:0}.quick #qa{width:30%}
+.quick button{border:0;background:var(--acc);color:#fff;font-weight:600;font-size:16px;padding:0 16px;border-radius:12px}
+.x{border:0;background:none;color:var(--mut);font-size:22px;padding:0 4px}
+.inc .amt{color:var(--ok)}
+.nav{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px}
+.nav button{border:0;background:var(--card);border:1px solid var(--line);color:var(--tx);width:44px;height:40px;border-radius:12px;font-size:20px}
+.nav button:disabled{opacity:.35}.nav b{font-size:17px}
+.dh{display:flex;justify-content:space-between;font-weight:600;margin:16px 2px 6px}
+.di{display:flex;justify-content:space-between;padding:8px 14px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:6px;font-size:15px}
+input[type=date]{min-width:0;-webkit-appearance:none;appearance:none;height:49px}
 </style>
 </head>
 <body>
 <main>
-  <h1>Bills &amp; Loans</h1>
+  <h1>My Money</h1>
   <p class="sub" id="month"></p>
-  <div class="box sal"><label for="sal">Monthly salary (₱)</label><input id="sal" type="number" inputmode="decimal" placeholder="Enter your salary"><div class="salrow"><div><small>All bills &amp; loans</small><b id="obl">₱0</b></div><div><small>Left for you</small><b id="lft">—</b></div></div><div class="meta" id="salnote" style="margin-top:8px"></div></div>
-  <div class="tabs"><button class="tab" data-t="bill">Bills</button><button class="tab" data-t="loan">Loans</button></div>
-  <div class="sum">
-    <div class="box"><small id="l1">Left to pay</small><b id="left">₱0</b></div>
-    <div class="box"><small id="l2">Paid</small><b id="paidc">0 of 0</b></div>
+  <div class="ov">
+    <div class="box"><small>Income</small><b id="oi">₱0</b></div>
+    <div class="box"><small>Bills &amp; loans</small><b id="ob">₱0</b></div>
+    <div class="box"><small>Spent (daily)</small><b id="os">₱0</b></div>
+    <div class="box"><small>Left for you</small><b id="ol">₱0</b></div>
   </div>
-  <div class="bar"><i id="prog"></i></div>
-  <div id="list"></div>
-  <p class="note" id="note">Bills repeat monthly and reset automatically each new month.</p>
+  <p class="ovnote" id="ovnote"></p>
+  <div class="tabs">
+    <button class="tab" data-t="bill">Bills</button><button class="tab" data-t="loan">Loans</button><button class="tab" data-t="income">Income</button><button class="tab" data-t="daily">Daily</button><button class="tab" data-t="report">Report</button>
+  </div>
+
+  <div class="view" id="vbills">
+    <div class="sum">
+      <div class="box"><small id="l1">Left to pay this month</small><b id="left">₱0</b></div>
+      <div class="box"><small id="l2">Paid</small><b id="paidc">0</b></div>
+    </div>
+    <div class="bar"><i id="prog"></i></div>
+    <div id="list"></div>
+    <p class="note" id="note"></p>
+  </div>
+
+  <div class="view" id="vincome">
+    <div class="box" style="margin-bottom:12px"><small>Received this month</small><b id="itot">₱0</b></div>
+    <div id="ilist"></div>
+  </div>
+
+  <div class="view" id="vdaily">
+    <div class="box"><small id="dtitle"></small><b id="dtot">₱0</b><div class="meta">Clears tomorrow · saved in your Report</div></div>
+    <div class="quick"><input id="qn" placeholder="What did you spend on?" autocomplete="off"><input id="qa" type="number" inputmode="decimal" placeholder="₱"><button id="qadd">Add</button></div>
+    <div id="dlist"></div>
+  </div>
+
+  <div class="view" id="vreport">
+    <div class="nav"><button id="rp">‹</button><b id="rmn"></b><button id="rn">›</button></div>
+    <div class="ov">
+      <div class="box"><small>Income</small><b id="ri">₱0</b></div>
+      <div class="box"><small>Bills &amp; loans paid</small><b id="rb">₱0</b></div>
+      <div class="box"><small>Daily spending</small><b id="rs">₱0</b></div>
+      <div class="box"><small>Net left</small><b id="rl">₱0</b></div>
+    </div>
+    <p class="ovnote" id="rnote"></p>
+    <div id="rdays"></div>
+  </div>
 </main>
 <button class="fab" id="add">+ Add bill</button>
 
@@ -77,10 +126,11 @@ input{width:100%;font-size:17px;padding:12px;border-radius:12px;border:1px solid
   <div class="panel">
     <h2 id="ptitle">Add bill</h2>
     <label for="fn" id="lblname">Bill name</label>
-    <input id="fn" placeholder="e.g. Electricity" autocomplete="off">
+    <input id="fn" placeholder="" autocomplete="off">
     <div class="row">
       <div><label for="fa" id="lblamt">Amount (₱)</label><input id="fa" type="number" inputmode="decimal" placeholder="0.00"></div>
-      <div><label for="fd">Due day (1–31)</label><input id="fd" type="number" inputmode="numeric" min="1" max="31" placeholder="15"></div>
+      <div id="wd"><label for="fd">Due day (1–31)</label><input id="fd" type="number" inputmode="numeric" min="1" max="31" placeholder="15"></div>
+      <div id="wdt" style="display:none"><label for="fdt">Date</label><input id="fdt" type="date"></div>
     </div>
     <div id="loanf" style="display:none"><div class="row">
       <div><label for="ft">Total months</label><input id="ft" type="number" inputmode="numeric" min="1" placeholder="24"></div>
@@ -93,136 +143,206 @@ input{width:100%;font-size:17px;padding:12px;border-radius:12px;border:1px solid
     </div>
   </div>
 </div>
-
 <script>
 (function(){
-  var KEY='bills-v1', bills=[], editing=null, dbDoc=null, tab='bill', salary=0;
-  var now=new Date(), mk=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-  var dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(), today=now.getDate();
-  var $=function(id){return document.getElementById(id)};
-  $('month').textContent=now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  var peso=function(n){return '₱'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2})};
-  try{var s=localStorage.getItem(KEY); if(s) bills=JSON.parse(s)||[]; salary=parseFloat(localStorage.getItem('salary-v1'))||0;}catch(e){}
-  function persist(){
-    try{localStorage.setItem(KEY,JSON.stringify(bills));localStorage.setItem('salary-v1',String(salary));}catch(e){}
-    if(dbDoc){dbDoc.set({bills:bills,salary:salary}).catch(function(){});}
+var KEY='tracker-v2', S={bills:[],income:[],spend:[]}, editing=null, mode='bill', tab='bill', dbDoc=null, rm=null;
+var $=function(id){return document.getElementById(id)};
+var pad=function(n){return String(n).padStart(2,'0')};
+var dstr=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+var todayS=function(){return dstr(new Date())}, curMk=function(){return todayS().slice(0,7)};
+var dimOf=function(mk){return new Date(+mk.slice(0,4),+mk.slice(5,7),0).getDate()};
+var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)};
+var peso=function(n){return '₱'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2})};
+var money=function(n){return (n<0?'-':'')+peso(Math.abs(n))};
+var esc=function(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML};
+var sum=function(a,f){return a.reduce(function(t,x){return t+(Number(f(x))||0)},0)};
+var nice=function(ds,o){return new Date(ds+'T00:00:00').toLocaleDateString('en-US',o||{weekday:'short',month:'short',day:'numeric'})};
+var mname=function(mk){return new Date(mk+'-01T00:00:00').toLocaleDateString('en-US',{month:'long',year:'numeric'})};
+function ordinal(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])}
+
+try{
+  var s0=localStorage.getItem(KEY);
+  if(s0){S=JSON.parse(s0)||S}
+  else{
+    var ob=localStorage.getItem('bills-v1'); if(ob)S.bills=JSON.parse(ob)||[];
+    var sal=parseFloat(localStorage.getItem('salary-v1'))||0;
+    if(sal>0)S.income.push({id:uid(),amt:sal,note:'Salary',date:todayS()});
   }
-  var typeOf=function(b){return b.type||'bill'};
-  var paidCount=function(b){return (b.base||0)+Object.keys(b.paid||{}).length};
-  var isDone=function(b){return typeOf(b)==='loan'&&paidCount(b)>=b.term};
-  var dueDay=function(b){return Math.min(b.day,dim)};
-  function status(b){
-    var pm=b.paid&&b.paid[mk];
-    if(isDone(b))return {k:'paid',t:'Completed',c:'t-paid',o:4};
-    if(pm)return {k:'paid',t:'Paid',c:'t-paid',o:3};
-    var d=dueDay(b)-today;
-    if(d<0)return {k:'over',t:'Overdue by '+(-d)+(d===-1?' day':' days'),c:'t-over',o:0};
-    if(d===0)return {k:'soon',t:'Due today',c:'t-soon',o:1};
-    if(d<=3)return {k:'soon',t:'Due in '+d+(d===1?' day':' days'),c:'t-soon',o:1};
-    return {k:'up',t:'Due in '+d+' days',c:'t-up',o:2};
-  }
-  function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML}
-  function ordinal(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])}
-  function renderSal(){
-    var tot=0, paidSoFar=0;
-    bills.forEach(function(b){
-      var pm=b.paid&&b.paid[mk];
-      if(isDone(b)&&!pm)return;
-      var a=Number(b.amount)||0; tot+=a; if(pm)paidSoFar+=a;
-    });
-    $('obl').textContent=peso(tot);
-    var l=$('lft');
-    if(!salary){l.textContent='—';l.className='';$('salnote').textContent='Enter your salary to see how much is left after everything.';return}
-    var r=salary-tot;
-    l.textContent=(r<0?'-':'')+peso(Math.abs(r));
-    l.className=r<0?'neg':'pos';
-    $('salnote').textContent=peso(paidSoFar)+' already paid · '+peso(tot-paidSoFar)+' still to pay this month'+(r<0?' · over budget':'');
-  }
-  function render(){
-    var loan=tab==='loan', list=$('list'), left=0, paid=0, bal=0, pm=0, tm=0;
-    document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.t===tab)});
-    var items=bills.filter(function(b){return typeOf(b)===tab});
-    var arr=items.slice().sort(function(a,b){var x=status(a),y=status(b);return x.o-y.o||dueDay(a)-dueDay(b)});
-    list.innerHTML=arr.length?'':'<div class="empty">No '+(loan?'loans':'bills')+' yet.<br>Tap “+ Add '+(loan?'loan':'bill')+'” to start.</div>';
-    arr.forEach(function(b){
-      var st=status(b), ok=st.k==='paid', done=isDone(b), pc=paidCount(b);
-      if(ok)paid++; else left+=Number(b.amount)||0;
-      if(loan){bal+=Math.max(0,b.term-pc)*(Number(b.amount)||0);pm+=Math.min(pc,b.term);tm+=b.term}
-      var meta='Due every '+ordinal(b.day);
-      var extra='';
-      if(loan){
-        var c=Math.min(pc,b.term);
-        meta+=' · '+c+' of '+b.term+' months paid';
-        extra='<div class="mini"><i style="width:'+(c/b.term*100)+'%"></i></div><div class="meta">'+(done?'Fully paid':(b.term-c)+' months left · '+peso((b.term-c)*b.amount)+' remaining')+'</div>';
-      }
-      var el=document.createElement('div');
-      el.className='bill'+(ok?' paid':'');
-      el.innerHTML='<button class="chk" aria-label="Toggle paid">'+(ok?'✓':'')+'</button>'+
-        '<div class="info" data-edit="1"><div class="name">'+esc(b.name)+'</div><div class="meta">'+meta+'</div>'+extra+'</div>'+
-        '<div class="right" data-edit="1"><div class="amt">'+peso(b.amount)+'</div><span class="tag '+st.c+'">'+st.t+'</span></div>';
-      el.querySelector('.chk').onclick=function(){
-        b.paid=b.paid||{};
-        if(b.paid[mk])delete b.paid[mk];
-        else{ if(isDone(b))return; b.paid[mk]=true; }
-        persist();render();
-      };
-      el.querySelectorAll('[data-edit]').forEach(function(n){n.onclick=function(){openSheet(b)}});
-      list.appendChild(el);
-    });
-    $('l1').textContent='Left to pay this month';
-    $('left').textContent=peso(left);
-    if(loan){$('l2').textContent='Total balance left';$('paidc').textContent=peso(bal);$('prog').style.width=(tm?pm/tm*100:0)+'%'}
-    else{$('l2').textContent='Paid';$('paidc').textContent=paid+' of '+items.length;$('prog').style.width=(items.length?paid/items.length*100:0)+'%'}
-    renderSal();
-    $('add').textContent='+ Add '+(loan?'loan':'bill');
-    $('note').textContent=loan?'Tick a loan each month once paid. Months paid before you added it are counted too.':'Bills repeat monthly and reset automatically each new month.';
-  }
-  document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){tab=t.dataset.t;render()}});
-  function openSheet(b){
-    editing=b||null; var loan=(b?typeOf(b):tab)==='loan';
-    $('ptitle').textContent=(b?'Edit ':'Add ')+(loan?'loan':'bill');
-    $('fn').value=b?b.name:'';$('fa').value=b?b.amount:'';$('fd').value=b?b.day:'';
-    $('lblname').textContent=loan?'Loan name':'Bill name';
-    $('lblamt').textContent=loan?'Monthly payment (₱)':'Amount (₱)';
-    $('loanf').style.display=loan?'block':'none';
-    $('ft').value=b&&loan?b.term:'';$('fb').value=b&&loan?(b.base||0):'';
-    $('del').style.display=b?'block':'none';
-    $('sheet').classList.add('on');
-  }
-  function closeSheet(){$('sheet').classList.remove('on')}
-  $('add').onclick=function(){openSheet(null)};
-  $('cancel').onclick=closeSheet;
-  $('sheet').onclick=function(e){if(e.target===$('sheet'))closeSheet()};
-  $('del').onclick=function(){
-    if(!editing||!confirm('Delete this '+(typeOf(editing)==='loan'?'loan':'bill')+'?'))return;
-    bills=bills.filter(function(x){return x!==editing});persist();render();closeSheet();
-  };
-  $('save').onclick=function(){
-    var loan=(editing?typeOf(editing):tab)==='loan';
-    var name=$('fn').value.trim(), amt=parseFloat($('fa').value), day=parseInt($('fd').value,10), term=parseInt($('ft').value,10), base=parseInt($('fb').value,10);
+}catch(e){}
+function fix(){S.bills=S.bills||[];S.income=S.income||[];S.spend=S.spend||[]}
+fix();
+function localSave(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function persist(){localSave();if(dbDoc){dbDoc.set(S).catch(function(){})}}
+
+var typeOf=function(b){return b.type||'bill'};
+var paidCount=function(b){return (b.base||0)+Object.keys(b.paid||{}).length};
+var isDone=function(b){return typeOf(b)==='loan'&&paidCount(b)>=b.term};
+var dueDay=function(b){return Math.min(b.day,dimOf(curMk()))};
+function status(b){
+  var mk=curMk();
+  if(isDone(b))return {k:'paid',t:'Completed',c:'t-paid',o:4};
+  if(b.paid&&b.paid[mk])return {k:'paid',t:'Paid',c:'t-paid',o:3};
+  var d=dueDay(b)-new Date().getDate();
+  if(d<0)return {k:'over',t:'Overdue by '+(-d)+(d===-1?' day':' days'),c:'t-over',o:0};
+  if(d===0)return {k:'soon',t:'Due today',c:'t-soon',o:1};
+  if(d<=3)return {k:'soon',t:'Due in '+d+(d===1?' day':' days'),c:'t-soon',o:1};
+  return {k:'up',t:'Due in '+d+' days',c:'t-up',o:2};
+}
+function monthStats(mk){
+  var inc=sum(S.income.filter(function(x){return x.date.slice(0,7)===mk}),function(x){return x.amt});
+  var spt=sum(S.spend.filter(function(x){return x.date.slice(0,7)===mk}),function(x){return x.amt});
+  var paid=sum(S.bills.filter(function(b){return b.paid&&b.paid[mk]}),function(b){return b.amount});
+  return {inc:inc,spt:spt,paid:paid};
+}
+
+function renderTop(){
+  var mk=curMk(), m=monthStats(mk), tot=0;
+  S.bills.forEach(function(b){if(isDone(b)&&!(b.paid&&b.paid[mk]))return;tot+=Number(b.amount)||0});
+  var left=m.inc-tot-m.spt;
+  $('month').textContent=mname(mk);
+  $('oi').textContent=peso(m.inc);$('ob').textContent=peso(tot);$('os').textContent=peso(m.spt);
+  var l=$('ol');l.textContent=money(left);l.className=m.inc||tot||m.spt?(left<0?'neg':'pos'):'';
+  $('ovnote').textContent=m.inc?(peso(tot-m.paid)+' of bills & loans still unpaid'+(left<0?' · over budget':'')):'Add your income to see how much is left.';
+}
+function renderBills(){
+  var loan=tab==='loan', list=$('list'), mk=curMk(), left=0, paid=0, bal=0, pm=0, tm=0;
+  var items=S.bills.filter(function(b){return typeOf(b)===tab});
+  var arr=items.slice().sort(function(a,b){var x=status(a),y=status(b);return x.o-y.o||dueDay(a)-dueDay(b)});
+  list.innerHTML=arr.length?'':'<div class="empty">No '+(loan?'loans':'bills')+' yet.<br>Tap “+ Add '+(loan?'loan':'bill')+'” to start.</div>';
+  arr.forEach(function(b){
+    var st=status(b), ok=st.k==='paid', done=isDone(b), pc=paidCount(b);
+    if(ok)paid++; else left+=Number(b.amount)||0;
+    var meta='Due every '+ordinal(b.day), extra='';
+    if(loan){
+      var c=Math.min(pc,b.term); bal+=Math.max(0,b.term-pc)*(Number(b.amount)||0); pm+=c; tm+=b.term;
+      meta+=' · '+c+' of '+b.term+' months paid';
+      extra='<div class="mini"><i style="width:'+(c/b.term*100)+'%"></i></div><div class="meta">'+(done?'Fully paid':(b.term-c)+' months left · '+peso((b.term-c)*b.amount)+' remaining')+'</div>';
+    }
+    var el=document.createElement('div');
+    el.className='bill'+(ok?' paid':'');
+    el.innerHTML='<button class="chk" aria-label="Toggle paid">'+(ok?'✓':'')+'</button><div class="info" data-e="1"><div class="name">'+esc(b.name)+'</div><div class="meta">'+meta+'</div>'+extra+'</div><div class="right" data-e="1"><div class="amt">'+peso(b.amount)+'</div><span class="tag '+st.c+'">'+st.t+'</span></div>';
+    el.querySelector('.chk').onclick=function(){
+      b.paid=b.paid||{};
+      if(b.paid[mk])delete b.paid[mk]; else{if(isDone(b))return;b.paid[mk]=true}
+      persist();render();
+    };
+    el.querySelectorAll('[data-e]').forEach(function(n){n.onclick=function(){openSheet(b,tab)}});
+    list.appendChild(el);
+  });
+  $('left').textContent=peso(left);
+  if(loan){$('l2').textContent='Total balance left';$('paidc').textContent=peso(bal);$('prog').style.width=(tm?pm/tm*100:0)+'%'}
+  else{$('l2').textContent='Paid';$('paidc').textContent=paid+' of '+items.length;$('prog').style.width=(items.length?paid/items.length*100:0)+'%'}
+  $('note').textContent=loan?'Tick a loan each month once paid. Months paid before you added it are counted too.':'Bills repeat monthly and reset automatically each new month.';
+}
+function renderIncome(){
+  var mk=curMk(), arr=S.income.filter(function(x){return x.date.slice(0,7)===mk}).sort(function(a,b){return b.date.localeCompare(a.date)});
+  $('itot').textContent=peso(sum(arr,function(x){return x.amt}));
+  var l=$('ilist');
+  l.innerHTML=arr.length?'':'<div class="empty">No income recorded this month.<br>Tap “+ Add income” when money comes in.</div>';
+  arr.forEach(function(x){
+    var el=document.createElement('div');el.className='bill inc';
+    el.innerHTML='<div class="info"><div class="name">'+esc(x.note)+'</div><div class="meta">'+nice(x.date)+'</div></div><div class="right"><div class="amt">+'+peso(x.amt)+'</div></div>';
+    el.onclick=function(){openSheet(x,'income')};
+    l.appendChild(el);
+  });
+}
+function renderDaily(){
+  var t=todayS(), arr=S.spend.filter(function(x){return x.date===t});
+  $('dtitle').textContent='Spent today · '+nice(t);
+  $('dtot').textContent=peso(sum(arr,function(x){return x.amt}));
+  var l=$('dlist');
+  l.innerHTML=arr.length?'':'<div class="empty">Nothing spent yet today.</div>';
+  arr.slice().reverse().forEach(function(x){
+    var el=document.createElement('div');el.className='bill';
+    el.innerHTML='<div class="info"><div class="name">'+esc(x.note)+'</div></div><div class="right amt">'+peso(x.amt)+'</div><button class="x" aria-label="Delete">×</button>';
+    el.querySelector('.x').onclick=function(){if(confirm('Delete “'+x.note+'”?')){S.spend=S.spend.filter(function(y){return y!==x});persist();render()}};
+    l.appendChild(el);
+  });
+}
+function renderReport(){
+  var cur=curMk(); if(!rm)rm=cur;
+  var m=monthStats(rm), net=m.inc-m.paid-m.spt;
+  $('rmn').textContent=mname(rm);$('rn').disabled=rm>=cur;
+  $('ri').textContent=peso(m.inc);$('rb').textContent=peso(m.paid);$('rs').textContent=peso(m.spt);
+  var n=$('rl');n.textContent=money(net);n.className=net<0?'neg':'pos';
+  $('rnote').textContent='Net left = income − bills & loans paid − daily spending.';
+  var arr=S.spend.filter(function(x){return x.date.slice(0,7)===rm}), days={};
+  arr.forEach(function(x){(days[x.date]=days[x.date]||[]).push(x)});
+  var keys=Object.keys(days).sort().reverse(), box=$('rdays');
+  box.innerHTML=keys.length?'':'<div class="empty">No daily spending recorded this month.</div>';
+  keys.forEach(function(k){
+    var h=document.createElement('div');h.className='dh';
+    h.innerHTML='<span>'+nice(k)+'</span><span>'+peso(sum(days[k],function(x){return x.amt}))+'</span>';
+    box.appendChild(h);
+    days[k].forEach(function(x){var r=document.createElement('div');r.className='di';r.innerHTML='<span>'+esc(x.note)+'</span><span>'+peso(x.amt)+'</span>';box.appendChild(r)});
+  });
+}
+function render(){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.t===tab)});
+  var v={bill:'vbills',loan:'vbills',income:'vincome',daily:'vdaily',report:'vreport'}[tab];
+  ['vbills','vincome','vdaily','vreport'].forEach(function(id){$(id).classList.toggle('on',id===v)});
+  renderTop();
+  if(v==='vbills')renderBills(); else if(v==='vincome')renderIncome(); else if(v==='vdaily')renderDaily(); else renderReport();
+  var f=$('add'); f.style.display=(tab==='daily'||tab==='report')?'none':'block';
+  f.textContent='+ Add '+(tab==='income'?'income':tab==='loan'?'loan':'bill');
+}
+document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){tab=t.dataset.t;rm=null;render();window.scrollTo(0,0)}});
+$('rp').onclick=function(){var y=+rm.slice(0,4),m=+rm.slice(5,7)-1;rm=dstr(new Date(y,m-1,1)).slice(0,7);render()};
+$('rn').onclick=function(){var y=+rm.slice(0,4),m=+rm.slice(5,7)-1;rm=dstr(new Date(y,m+1,1)).slice(0,7);render()};
+
+function quickAdd(){
+  var a=parseFloat($('qa').value), n=$('qn').value.trim();
+  if(!(a>0)){$('qa').focus();return}
+  S.spend.push({id:uid(),amt:a,note:n||'Spending',date:todayS()});
+  $('qa').value='';$('qn').value='';persist();render();$('qn').focus();
+}
+$('qadd').onclick=quickAdd;
+[$('qn'),$('qa')].forEach(function(i){i.onkeydown=function(e){if(e.key==='Enter')quickAdd()}});
+
+function openSheet(it,m){
+  editing=it||null; mode=m||tab; var loan=mode==='loan', inc=mode==='income';
+  $('ptitle').textContent=(it?'Edit ':'Add ')+(inc?'income':loan?'loan':'bill');
+  $('lblname').textContent=inc?'Source / note':loan?'Loan name':'Bill name';
+  $('fn').placeholder=inc?'e.g. Salary':'';
+  $('lblamt').textContent=inc?'Amount received (₱)':loan?'Monthly payment (₱)':'Amount (₱)';
+  $('wd').style.display=inc?'none':'block';$('wdt').style.display=inc?'block':'none';
+  $('loanf').style.display=loan?'block':'none';
+  if(inc){$('fn').value=it?it.note:'';$('fa').value=it?it.amt:'';$('fdt').value=it?it.date:todayS()}
+  else{$('fn').value=it?it.name:'';$('fa').value=it?it.amount:'';$('fd').value=it?it.day:'';$('ft').value=it&&loan?it.term:'';$('fb').value=it&&loan?(it.base||0):''}
+  $('del').style.display=it?'block':'none';
+  $('sheet').classList.add('on');
+}
+function closeSheet(){$('sheet').classList.remove('on')}
+$('add').onclick=function(){openSheet(null,tab)};
+$('cancel').onclick=closeSheet;
+$('sheet').onclick=function(e){if(e.target===$('sheet'))closeSheet()};
+$('del').onclick=function(){
+  if(!editing||!confirm('Delete this entry?'))return;
+  if(mode==='income')S.income=S.income.filter(function(x){return x!==editing});
+  else S.bills=S.bills.filter(function(x){return x!==editing});
+  persist();render();closeSheet();
+};
+$('save').onclick=function(){
+  var name=$('fn').value.trim(), amt=parseFloat($('fa').value);
+  if(mode==='income'){
+    if(!(amt>0)){$('fa').focus();return}
+    var dt=$('fdt').value||todayS();
+    if(editing){editing.note=name||'Income';editing.amt=amt;editing.date=dt}
+    else S.income.push({id:uid(),amt:amt,note:name||'Income',date:dt});
+  }else{
+    var loan=mode==='loan', day=parseInt($('fd').value,10), term=parseInt($('ft').value,10), base=parseInt($('fb').value,10);
     if(!name){$('fn').focus();return}
     if(!(day>=1&&day<=31)){$('fd').focus();return}
     if(isNaN(amt))amt=0;
-    if(loan){
-      if(!(term>=1)){$('ft').focus();return}
-      if(isNaN(base)||base<0)base=0; if(base>term)base=term;
-    }
+    if(loan){if(!(term>=1)){$('ft').focus();return} if(isNaN(base)||base<0)base=0; if(base>term)base=term}
     if(editing){editing.name=name;editing.amount=amt;editing.day=day;if(loan){editing.term=term;editing.base=base}}
-    else{
-      var o={id:Date.now().toString(36),type:tab,name:name,amount:amt,day:day,paid:{}};
-      if(loan){o.term=term;o.base=base}
-      bills.push(o);
-    }
-    persist();render();closeSheet();
-  };
-  $('sal').value=salary||'';
-  var st2;
-  $('sal').oninput=function(){
-    salary=Math.max(0,parseFloat($('sal').value)||0);
-    renderSal();
-    clearTimeout(st2);st2=setTimeout(persist,500);
-  };
-  render();
+    else{var o={id:uid(),type:mode,name:name,amount:amt,day:day,paid:{}};if(loan){o.term=term;o.base=base}S.bills.push(o)}
+  }
+  persist();render();closeSheet();
+};
+document.addEventListener('visibilitychange',function(){if(!document.hidden)render()});
+render();
+
 })();
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
